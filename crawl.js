@@ -1,5 +1,28 @@
 import { JSDOM } from 'jsdom'
 
+export async function crawlPage(currentURL){
+    console.log(`Crawling ${currentURL}`)
+
+    // fetch the page
+    try{
+        const resp = await fetch(currentURL)
+        if (resp.status > 399){
+            console.log(`Error fetching ${currentURL}: ${resp.status}`)
+            return
+        }
+
+        const contentType = resp.headers.get('content-type')
+        if (!contentType.includes('text/html')) {
+            console.log(`Skipping ${currentURL} because content type is ${contentType}`)
+            return
+        }
+        console.log(await resp.text())
+    } catch (error) {
+        console.log(`Error fetching ${currentURL}: ${error.message}`)
+        return
+    }
+}
+
 export function getURLSFromHTML(htmlBody, baseUrl) {
     const urls = []
     const domObj = new JSDOM(htmlBody)

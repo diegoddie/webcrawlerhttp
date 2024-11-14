@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Project for the Learn HTTP course (boot.dev)",
   "main": "main.js",
+  "type": "module",
   "scripts": {
     "start": "node main.js",
     "test": "jest"
