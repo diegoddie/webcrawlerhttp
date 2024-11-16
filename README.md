@@ -64,3 +64,8 @@ The crawler handles several types of errors:
 
 ## Testing
 Tests are written using Jest. Run the test suite with:
+
+```bash
+npm test
+```
+
