@@ -1,5 +1,5 @@
 import { normalizeUrl, getURLSFromHTML } from './crawl';
-import { text, expect } from '@jest/globals';
+import { test, expect } from '@jest/globals';
 
 test("normalizeUrl strip protocol", () => {
     const input = "https://blog.boot.dev/path"
