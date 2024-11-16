@@ -1,6 +1,21 @@
 import { JSDOM } from 'jsdom'
 
-export async function crawlPage(currentURL){
+export async function crawlPage(baseURL, currentURL, pages){
+    const baseURLObj = new URL(baseURL)
+    const currentURLObj = new URL(currentURL)
+
+    if (currentURLObj.hostname !== baseURLObj.hostname) {
+        return pages
+    }
+
+    const normalizedCurrentURL = normalizeUrl(currentURL)
+    if (pages[normalizedCurrentURL] > 0) {
+        pages[normalizedCurrentURL]++
+        return pages
+    }
+
+    pages[normalizedCurrentURL] = 1
+
     console.log(`Crawling ${currentURL}`)
 
     // fetch the page
@@ -8,15 +23,24 @@ export async function crawlPage(currentURL){
         const resp = await fetch(currentURL)
         if (resp.status > 399){
             console.log(`Error fetching ${currentURL}: ${resp.status}`)
-            return
+            return pages
         }
 
         const contentType = resp.headers.get('content-type')
         if (!contentType.includes('text/html')) {
             console.log(`Skipping ${currentURL} because content type is ${contentType}`)
-            return
+            return pages
         }
-        console.log(await resp.text())
+        
+        const htmlBody = await resp.text()
+
+        const nextURLS = getURLSFromHTML(htmlBody, baseURL)
+
+        for (const nextURL of nextURLS){
+            pages = await crawlPage(baseURL, nextURL, pages)
+        }
+
+        return pages
     } catch (error) {
         console.log(`Error fetching ${currentURL}: ${error.message}`)
         return
